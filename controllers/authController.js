@@ -30,7 +30,7 @@ const authController = {
       res.status(201).json({
         id: newUser.id,
         email: newUser.email,
-        created_at: newUser.created_at // 👈 Nueva columna
+        created_at: newUser.created_at 
       });
 
     } catch (error) {

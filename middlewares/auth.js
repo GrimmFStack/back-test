@@ -3,14 +3,14 @@ const pool = require('../config/db');
 
 const authMiddleware = async (req, res, next) => {
   try {
-    // 1. Verificar token
+    // Verificar token
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) throw new Error('Token no proporcionado');
 
-    // 2. Decodificar token
+    //  Decodificar token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
-    // 3. Obtener usuario completo de la BD
+    // Obtener usuario completo de la BD
     const { rows } = await pool.query(
       'SELECT id, email FROM users WHERE id = $1',
       [decoded.id]
@@ -18,7 +18,7 @@ const authMiddleware = async (req, res, next) => {
     
     if (!rows[0]) throw new Error('Usuario no existe');
 
-    // 4. Adjuntar solo datos esenciales
+    // Adjuntar solo datos esenciales
     req.user = { 
       id: rows[0].id,
       email: rows[0].email
