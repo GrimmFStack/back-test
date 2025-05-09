@@ -2,57 +2,95 @@ const User = require('../models/User');
 const Log = require('../models/Log');
 
 const authController = {
+  /**
+   * Registro de usuario
+   */
   async register(req, res) {
     try {
       const { email, password } = req.body;
-      
-      // Validar campos
+
+      // Validación de campos
       if (!email || !password) {
-        return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+        return res.status(400).json({ 
+          error: 'Email y contraseña son requeridos' 
+        });
       }
 
-      // Crear usuario
+      // Crear usuario (el modelo ya maneja duplicados y hashing)
       const newUser = await User.create(email, password);
-      
-      // Registrar log
+
+      // Registrar en logs (opcional)
       await Log.create(
-        newUser.id, // Usuario recién creado
+        newUser.id,
         'USER_REGISTER',
-        `Nuevo usuario: ${email}`
+        `Nuevo registro: ${email}`
       );
 
-      res.status(201).json({ id: newUser.id, email: newUser.email });
+      // Respuesta exitosa (no devolver password)
+      res.status(201).json({
+        id: newUser.id,
+        email: newUser.email,
+        created_at: newUser.created_at // 👈 Nueva columna
+      });
+
     } catch (error) {
-      console.error(error); // 👈 Aquí se imprime el error
+      console.error('Error en register:', error);
+      
+      // Manejo específico de errores
+      if (error.message === 'El email ya está registrado') {
+        return res.status(409).json({ error: error.message });
+      }
+
       res.status(500).json({ error: 'Error al registrar usuario' });
     }
   },
 
+  /**
+   * Inicio de sesión
+   */
   async login(req, res) {
     try {
       const { email, password } = req.body;
+
+      // Validación básica
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+      }
+
+      // Buscar usuario
       const user = await User.findByEmail(email);
-      
-      // Validar credenciales
-      if (!user || !(await User.comparePasswords(password, user.password))) {
+      if (!user) {
         return res.status(401).json({ error: 'Credenciales inválidas' });
       }
 
-      // Generar token
-      const token = User.generateToken(user.id);
-      
-      // Registrar log
-      // Ejemplo de código seguro:
-await Log.create(
-  newUser.id,  // Asegúrate de que newUser esté definido
-  'USER_REGISTER',
-  `Usuario registrado: ${email}`  // Proporciona un valor por defecto
-);
+      // Comparar contraseñas (el modelo usa bcrypt)
+      const isPasswordValid = await User.comparePasswords(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(401).json({ error: 'Credenciales inválidas' });
+      }
 
-      res.json({ token });
+      // Generar token JWT (expira en 1h por defecto)
+      const token = User.generateToken(user.id);
+
+      // Registrar log de acceso
+      await Log.create(
+        user.id,
+        'USER_LOGIN',
+        `Inició sesión: ${email}`
+      );
+
+      // Respuesta con token
+      res.json({ 
+        token,
+        user: {
+          id: user.id,
+          email: user.email
+        }
+      });
+
     } catch (error) {
-      console.error(error); // 👈 Aquí también
-      res.status(500).json({ error: 'Error en el login' });
+      console.error('Error en login:', error);
+      res.status(500).json({ error: 'Error en el servidor' });
     }
   }
 };
