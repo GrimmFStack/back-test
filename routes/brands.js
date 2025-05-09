@@ -169,7 +169,7 @@ router.patch('/:id/activate', (req, res) => brandController.toggleActive(req, re
  *           schema:
  *             type: object
  *             properties:
- *               is_active:
+ *               is_active: 
  *                 type: boolean
  *                 example: false
  *     responses:
