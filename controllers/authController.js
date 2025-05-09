@@ -42,11 +42,12 @@ const authController = {
       const token = User.generateToken(user.id);
       
       // Registrar log
-      await Log.create(
-        user.id,
-        'USER_LOGIN',
-        `Inició sesión: ${email}`
-      );
+      // Ejemplo de código seguro:
+await Log.create(
+  newUser.id,  // Asegúrate de que newUser esté definido
+  'USER_REGISTER',
+  `Usuario registrado: ${email}`  // Proporciona un valor por defecto
+);
 
       res.json({ token });
     } catch (error) {
