@@ -10,8 +10,12 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:3000/api',
-        description: 'Servidor local',
+      url: 'https://mi-api.onrender.com/api', // Cambia esto
+      description: 'Servidor en Render',
+      },
+      {
+        url: 'http://localhost:3000/api', // Opcional: Para desarrollo local
+        description: 'Local',
       },
     ],
     components: {
@@ -30,4 +34,4 @@ const options = {
 
 const swaggerSpec = swaggerJsdoc(options);
 
-module.exports = swaggerSpec;
+module.exports = swaggerSpec; 
