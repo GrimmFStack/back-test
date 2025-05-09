@@ -4,12 +4,12 @@ class Brand {
   // Obtener todas las marcas no eliminadas
   static async getAll() {
     const { rows } = await pool.query(
-      'SELECT * FROM brands WHERE deleted = FALSE AND is_active = TRUE'
+      'SELECT * FROM brands WHERE deleted = FALSE ORDER BY name'
     );
     return rows;
   }
 
-  // Obtener marca por ID (¡AÑADIDO! Útil para validaciones)
+  // Obtener marca por ID (incluye verificaciones de estado)
   static async getById(id) {
     const { rows } = await pool.query(
       'SELECT * FROM brands WHERE id = $1 AND deleted = FALSE',
@@ -39,12 +39,16 @@ class Brand {
     return rows[0];
   }
 
-  // Activar/desactivar (ahora usa is_active como en tu lógica de logs)
+  // Activar/desactivar (¡corregido!)
   static async toggleActive(id, isActive) {
+    // Primero verifica si existe la marca
+    const brandExists = await this.getById(id);
+    if (!brandExists) return null;
+
     const { rows } = await pool.query(
       `UPDATE brands 
        SET is_active = $1, updated_at = NOW() 
-       WHERE id = $2 AND deleted = FALSE 
+       WHERE id = $2 
        RETURNING *`,
       [isActive, id]
     );
@@ -55,7 +59,7 @@ class Brand {
   static async delete(id) {
     const { rows } = await pool.query(
       `UPDATE brands 
-       SET deleted = TRUE, updated_at = NOW() 
+       SET deleted = TRUE, is_active = FALSE, updated_at = NOW() 
        WHERE id = $1 
        RETURNING *`,
       [id]
@@ -64,4 +68,4 @@ class Brand {
   }
 }
 
-module.exports = Brand; 
+module.exports = Brand;

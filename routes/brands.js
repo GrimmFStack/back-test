@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const brandController = require('../controllers/brandController');
 const authMiddleware = require('../middlewares/auth');
+router.patch('/:id/activate', brandController.toggleActive);
+router.patch('/:id/deactivate', brandController.toggleActive);
 
 router.use(authMiddleware);
 
