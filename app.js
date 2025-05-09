@@ -6,7 +6,13 @@ const swaggerSpec = require('./config/swagger');
 require('dotenv').config();
 
 const app = express();
-
+app.use(cors({
+  origin: [
+    'https://tu-api.onrender.com',
+    'http://localhost:3000'
+  ],
+  credentials: true
+}));
 // =============================================
 // Configuración de CORS (Personalizada para producción)
 // =============================================
