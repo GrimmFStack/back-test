@@ -5,8 +5,11 @@ const pool = new Pool({
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD, // 🚨 Usa la contraseña de tu .env
+  password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  ssl: {
+    rejectUnauthorized: false, // Permite una conexión segura sin validar el certificado
+  },
 });
 
 module.exports = pool;
