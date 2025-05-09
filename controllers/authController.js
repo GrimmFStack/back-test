@@ -23,6 +23,7 @@ const authController = {
 
       res.status(201).json({ id: newUser.id, email: newUser.email });
     } catch (error) {
+      console.error(error); // 👈 Aquí se imprime el error
       res.status(500).json({ error: 'Error al registrar usuario' });
     }
   },
@@ -49,6 +50,7 @@ const authController = {
 
       res.json({ token });
     } catch (error) {
+      console.error(error); // 👈 Aquí también
       res.status(500).json({ error: 'Error en el login' });
     }
   }

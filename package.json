@@ -4,9 +4,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npm install --ignore-scripts",
-  "start": "node app.js",
-  "dev": "nodemon app.js" 
-},
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
