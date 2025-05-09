@@ -10,11 +10,11 @@ const options = {
     },
     servers: [
       {
-      url: 'https://mi-api.onrender.com/api', // Cambia esto
-      description: 'Servidor en Render',
+        url: 'https://back-test-63v5.onrender.com/api',
+        description: 'Producción',
       },
       {
-        url: 'http://localhost:3000/api', // Opcional: Para desarrollo local
+        url: 'http://localhost:3000/api',
         description: 'Local',
       },
     ],
@@ -29,9 +29,9 @@ const options = {
     },
     security: [{ bearerAuth: [] }],
   },
-  apis: ['./routes/*.js'], // Ruta a tus archivos de rutas
+  apis: ['./routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
-module.exports = swaggerSpec; 
+module.exports = swaggerSpec;

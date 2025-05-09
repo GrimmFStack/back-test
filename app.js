@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const swaggerUI = require('swagger-ui-express');
-const swaggerSpec = require('./config/swagger'); // Para ver logs de peticiones en consola
+const swaggerSpec = require('./config/swagger');
 require('dotenv').config();
 
 const app = express();
@@ -10,33 +10,29 @@ const app = express();
 // Middlewares
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev')); // Muestra detalles de peticiones HTTP en consola
+app.use(morgan('dev'));
 
 // Importar rutas
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const brandRoutes = require('./routes/brands');
-const logRoutes = require('./routes/logs'); // 👈 Solo si implementaste el paso 16
+const logRoutes = require('./routes/logs');
 
 // Montar rutas
-app.use('/api/auth', authRoutes);       // Autenticación (login/register)
-app.use('/api/products', productRoutes); // CRUD de productos
-app.use('/api/brands', brandRoutes);     // CRUD de marcas
-app.use('/api/logs', logRoutes);         // 🔍 Opcional: logs (paso 16)
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/brands', brandRoutes);
+app.use('/api/logs', logRoutes);
 
-// Ruta de prueba
+// Redirigir raíz a Swagger UI
 app.get('/', (req, res) => {
-  res.json({ 
-    message: 'API funcionando 🚀',
-    endpoints: {
-      auth: '/api/auth',
-      products: '/api/products',
-      brands: '/api/brands'
-    }
-  });
+  res.redirect('/api-docs'); // 👈 Cambiado aquí
 });
 
-// Manejo de errores (personalizado)
+// Documentación Swagger
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
+
+// Manejo de errores
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Algo salió mal 💥' });
@@ -44,7 +40,6 @@ app.use((err, req, res, next) => {
 
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 app.listen(PORT, () => {
   console.log(`✅ Servidor listo en http://localhost:${PORT}`);
 });
